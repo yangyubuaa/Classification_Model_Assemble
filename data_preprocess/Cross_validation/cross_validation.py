@@ -6,6 +6,7 @@
 import torch
 import copy
 
+
 class KFoldCrossValidation:
     '''k折交叉验证
     输入为data_process.Dataset.dataset中重写的dataset类

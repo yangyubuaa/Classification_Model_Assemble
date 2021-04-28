@@ -6,6 +6,7 @@
 
 import torch
 
+
 def tensor_seq_len_desent(tensor_in, seq_len_in, label_in):
     '''将输入的tensor按照seq_len从大到小重新排序
     :param tensor_in:
@@ -17,6 +18,7 @@ def tensor_seq_len_desent(tensor_in, seq_len_in, label_in):
     tensor_out = torch.index_select(tensor_in, dim=0, index=idx_sort)
     label_out = torch.index_select(label_in, dim=0, index=idx_sort)
     return tensor_out, seq_len_out.squeeze(), label_out.squeeze(), idx_sort.squeeze()
+
 
 if __name__ == '__main__':
     tensor_in = torch.tensor([

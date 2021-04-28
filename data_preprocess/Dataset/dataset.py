@@ -1,6 +1,10 @@
 import torch
 from torch.utils.data import Dataset
 from random import shuffle
+'''
+在做tokenize之后使用下面的类进行数据加载
+'''
+
 
 class SequenceDataset(Dataset):
     '''序列分类数据集类，继承自Dataset

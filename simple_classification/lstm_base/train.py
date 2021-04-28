@@ -19,6 +19,7 @@ from torch.optim import Adam
 
 from torch.nn.functional import cross_entropy
 
+
 def train():
     use_cuda = True if torch.cuda.is_available() else False
 
