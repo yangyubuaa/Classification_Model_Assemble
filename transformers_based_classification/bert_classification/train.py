@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim import SGD
 from torch.nn.functional import cross_entropy
@@ -9,13 +10,18 @@ from utils.load import load_yaml
 from dataset.preprocess import Preprocess
 from transformers_based_classification.bert_classification.model import BertClassification
 from data_preprocess.Dataset.dataset import BertSequenceDataset
-from data_preprocess.Tokenizer.tokenizer import ClassificationLabelTokenizer
+from data_preprocess.Tokenizer.label_tokenizer import ClassificationLabelTokenizer
 
 
 def train():
-    train_configs = load_yaml("bert_classification_config.yaml")
     # 是否使用gpu加速
     use_cuda = True if torch.cuda.is_available() else False
+    if use_cuda:
+        device_nums = torch.cuda.device_count()
+        print("use {} GPUs!".format(device_nums))
+
+    train_configs = load_yaml("bert_classification_config.yaml")
+
 
     # 预处理参数读取
     params = load_yaml(train_configs["path"]["preprocess_config_path"])
@@ -39,10 +45,9 @@ def train():
     train_set = BertSequenceDataset(train_x_tokenized, train_y_tokenized)
     eval_set = BertSequenceDataset(eval_x_tokenized, eval_y_tokenized)
 
-
     model = BertClassification(train_configs)
     if use_cuda:
-        model = model.cuda()
+        model = nn.DataParallel(model, device_ids=list(range(device_nums)))
 
     # 使用dataloader加载训练集和测试集
     train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
