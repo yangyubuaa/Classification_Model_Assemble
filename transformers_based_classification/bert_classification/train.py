@@ -1,7 +1,10 @@
 import torch
 import torch.nn as nn
+import argparse
+import sys
+sys.path.append("../..")
 from torch.utils.data import DataLoader
-from torch.optim import SGD
+from torch.optim import Adam
 from torch.nn.functional import cross_entropy
 
 from transformers import BertTokenizer
@@ -20,12 +23,11 @@ def train():
         device_nums = torch.cuda.device_count()
         print("use {} GPUs!".format(device_nums))
 
+    # 预处理以及模型参数读取
     train_configs = load_yaml("bert_classification_config.yaml")
-
-
-    # 预处理参数读取
     params = load_yaml(train_configs["path"]["preprocess_config_path"])
     p = Preprocess(params)
+
     # 得到原始数据集训练文本和标签
     source_train_x, source_train_y = p.get_train_data()
     source_eval_x, source_eval_y = p.get_eval_data()
@@ -45,19 +47,23 @@ def train():
     train_set = BertSequenceDataset(train_x_tokenized, train_y_tokenized)
     eval_set = BertSequenceDataset(eval_x_tokenized, eval_y_tokenized)
 
+    # 读取模型参数初始化模型
     model = BertClassification(train_configs)
     if use_cuda:
         model = nn.DataParallel(model, device_ids=list(range(device_nums)))
-
+        model = model.cuda(device=0)
     # 使用dataloader加载训练集和测试集
     train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
     eval_dataloader = DataLoader(eval_set, batch_size=64)
 
     # 创建优化器
-    optmizer = SGD(model.parameters(), lr=0.002)
+    optmizer = Adam(model.parameters(), lr=0.00001)
 
+    # 创建损失函数
+    loss_f = nn.CrossEntropyLoss()
     for epoch in range(100):
         for batch_index, batch in enumerate(train_dataloader):
+            # print(batch_index)
             optmizer.zero_grad()
             input_ids, token_type_ids, attention_mask, train_y = batch
             # l = input_ids.numpy().tolist()
@@ -66,14 +72,16 @@ def train():
             # print(labeltokenizer.decode(train_y))
             if use_cuda:
                 input_ids, token_type_ids, attention_mask, train_y = \
-                    input_ids.cuda(), token_type_ids.cuda(), attention_mask.cuda(), train_y.cuda()
+                    input_ids.cuda(device=0), token_type_ids.cuda(device=0), attention_mask.cuda(device=0), train_y.cuda(device=0)
+
 
             train_y_predict = model(input_ids, token_type_ids, attention_mask)
             train_y = train_y.squeeze()
-            train_loss = cross_entropy(train_y_predict, train_y)
+            train_loss = loss_f(train_y_predict, train_y)
 
             train_loss.backward()
             optmizer.step()
+            print(train_loss)
 
             if batch_index % 100 == 0:
                 train_predict = torch.argmax(train_y_predict, 1)
@@ -105,5 +113,7 @@ def train():
                 # train_record(model, params_s, epoch, index, train_loss, eval_loss, train_accu, eval_accu)
 
 
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser("python train.py")
     train()

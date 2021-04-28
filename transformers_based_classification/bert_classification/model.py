@@ -16,8 +16,9 @@ class BertClassification(nn.Module):
         self.label_nums = self.configs["label_nums"]
         self.dropout = self.configs["dropout"]
 
-        self.bert_model = BertModel.from_pretrained("/Users/yangyu/bert模型/bert-base-chinese")
-
+        self.bert_model = BertModel.from_pretrained(self.configs["path"]["bert_path"])
+        for p in self.bert_model.parameters():
+            p.requires_grad = True
         # output shape of bert: (batch_size, seqlens, lstm_hiddensize)
         self.classification = torch.nn.Sequential(
             torch.nn.Linear(self.bert_hiddensize, self.dense),
