@@ -1,0 +1,12 @@
+nn_params:
+  input_size: 2093
+  embedding_size: 300
+  lstm_hiddensize: 300
+  bidirectional_lstm: True
+  lstm_layers: 1
+  drop_out: 0.8
+  dense: 300
+  label_nums: 188
+
+batch_size: 64
+epoch: 100
