@@ -1,6 +1,6 @@
 path:
-  bert_path: /home/yangy/bert模型/bert-base-chinese
-  preprocess_config_path: /home/yangy/pytorch_sequence_classification/dataset/preprocess_config.yaml
+  bert_path: /home/ubuntu1804/bert模型/bert-base-chinese
+  preprocess_config_path: /home/ubuntu1804/pytorch_sequence_classification/dataset/preprocess_config.yaml
 bert_hiddensize: 768
 dense: 512
 label_nums: 188
