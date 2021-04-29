@@ -1,3 +1,9 @@
+import sys
+sys.path.append("../..")
+import torch
+from utils.load import load_json
+
+
 class ClassificationLabelTokenizer:
     def __init__(self, label2index: dict):
         if isinstance(label2index, dict):
@@ -29,6 +35,7 @@ class ClassificationLabelTokenizer:
                 label_list[index] = self.index2label[label_list[index]]
 
             return label_list
+
 
 if __name__ == '__main__':
     # ClassificationLabelTokenizer使用方法1

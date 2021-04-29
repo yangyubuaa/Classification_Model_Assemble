@@ -10,8 +10,10 @@ import json
 import os
 
 from utils.load import load_yaml, load_xlsx, load_json
+
+
 class Preprocess:
-    '''将数据集处理成训练集和测试集的形式
+    '''将数据集封装，整理成训练集和测试集并返回，并产生label2index.json以及vocab2index.json
 
     '''
     def __init__(self, configs: dict):
@@ -86,6 +88,7 @@ class Preprocess:
                 data_y_clear.append(data_y[index])
         # print(len(data_x_clear))
         return data_x_clear, data_y_clear
+
 
 if __name__ == '__main__':
     params = load_yaml("/Users/yangyu/PycharmProjects/infer_of_intent/dataset/preprocess_config.yaml")

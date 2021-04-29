@@ -1,10 +1,10 @@
 
 data_path:
-  train: /Users/yangyu/PycharmProjects/infer_of_intent/dataset/final_.xlsx
-  eval: /Users/yangyu/PycharmProjects/infer_of_intent/dataset/eval_data/eval.xlsx
+  train: /home/ubuntu1804/pytorch_sequence_classification/dataset/final_.xlsx
+  eval: /home/ubuntu1804/pytorch_sequence_classification/dataset/eval_data/eval.xlsx
 
 tokenized_path:
-  vocab2index_json_path: /Users/yangyu/PycharmProjects/infer_of_intent/dataset/vocab2index.json
-  label2index_json_path: /Users/yangyu/PycharmProjects/infer_of_intent/dataset/label2index.json
+  vocab2index_json_path: /home/ubuntu1804/pytorch_sequence_classification/dataset/vocab2index.json
+  label2index_json_path: /home/ubuntu1804/pytorch_sequence_classification/dataset/label2index.json
 
 
