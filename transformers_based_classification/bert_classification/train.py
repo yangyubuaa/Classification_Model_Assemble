@@ -4,7 +4,7 @@ import argparse
 import sys
 sys.path.append("../..")
 from torch.utils.data import DataLoader
-from torch.optim import SGD
+from torch.optim import Adam
 from torch.nn.functional import cross_entropy
 
 from transformers import BertTokenizer
@@ -57,7 +57,7 @@ def train():
     eval_dataloader = DataLoader(eval_set, batch_size=64)
 
     # 创建优化器
-    optmizer = SGD(model.parameters(), lr=0.00001)
+    optmizer = Adam(model.parameters(), lr=0.00001)
 
     # 创建损失函数
     loss_f = nn.CrossEntropyLoss()
