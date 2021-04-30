@@ -88,31 +88,34 @@ def train():
                 return
 
             if batch_index % 100 == 0:
-                train_predict = torch.argmax(train_y_predict, 1)
-                train_accu = int((train_y == train_predict).sum()) / len(train_y)
-                sum_eval_accu = 0
-                sum_eval_loss = 0
-                for eval_batch in eval_dataloader:
-                    eval_input_ids, eval_token_type_ids, eval_attention_mask, eval_y = eval_batch
-                    eval_y = eval_y.squeeze()
-                    if use_cuda:
-                        eval_input_ids, eval_token_type_ids, eval_attention_mask, eval_y = \
-                            eval_input_ids.cuda(device=0), eval_token_type_ids.cuda(device=0), eval_attention_mask.cuda(device=0), eval_y.cuda(device=0)
+                model.eval()
+                with torch.no_grad:
+                    train_predict = torch.argmax(train_y_predict, 1)
+                    train_accu = int((train_y == train_predict).sum()) / len(train_y)
+                    sum_eval_accu = 0
+                    sum_eval_loss = 0
+                    for eval_batch in eval_dataloader:
+                        eval_input_ids, eval_token_type_ids, eval_attention_mask, eval_y = eval_batch
+                        eval_y = eval_y.squeeze()
+                        if use_cuda:
+                            eval_input_ids, eval_token_type_ids, eval_attention_mask, eval_y = \
+                                eval_input_ids.cuda(device=0), eval_token_type_ids.cuda(device=0), eval_attention_mask.cuda(device=0), eval_y.cuda(device=0)
 
-                    eval_y_predict = model(eval_input_ids, eval_token_type_ids, eval_attention_mask)
-                    eval_loss = cross_entropy(eval_y_predict, eval_y)
+                        eval_y_predict = model(eval_input_ids, eval_token_type_ids, eval_attention_mask)
+                        eval_loss = cross_entropy(eval_y_predict, eval_y)
 
-                    eval_predict = torch.argmax(eval_y_predict, 1)
-                    eval_accu = int((eval_y == eval_predict).sum()) / len(eval_y)
-                    sum_eval_accu = sum_eval_accu + eval_accu
-                    sum_eval_loss = sum_eval_loss + eval_loss
-                    optmizer.zero_grad()
-                    torch.cuda.empty_cache()
-                sum_eval_accu = sum_eval_accu / len(eval_dataloader)
-                sum_eval_loss = sum_eval_loss / len(eval_dataloader)
-                print("train_epoch:{} | train_batch:{} | train_loss:{} | eval_loss:{} | train_accu:{} | eval_accu:{}"
-                      "".format(epoch, batch_index, train_loss.item(), sum_eval_loss, train_accu, sum_eval_accu))
-                # train_record(model, params_s, epoch, index, train_loss, eval_loss, train_accu, eval_accu)
+                        eval_predict = torch.argmax(eval_y_predict, 1)
+                        eval_accu = int((eval_y == eval_predict).sum()) / len(eval_y)
+                        sum_eval_accu = sum_eval_accu + eval_accu
+                        sum_eval_loss = sum_eval_loss + eval_loss
+                        optmizer.zero_grad()
+                        torch.cuda.empty_cache()
+                    sum_eval_accu = sum_eval_accu / len(eval_dataloader)
+                    sum_eval_loss = sum_eval_loss / len(eval_dataloader)
+                    print("train_epoch:{} | train_batch:{} | train_loss:{} | eval_loss:{} | train_accu:{} | eval_accu:{}"
+                          "".format(epoch, batch_index, train_loss.item(), sum_eval_loss, train_accu, sum_eval_accu))
+                    # train_record(model, params_s, epoch, index, train_loss, eval_loss, train_accu, eval_accu)
+                model.train()
 
 
 if __name__ == '__main__':
