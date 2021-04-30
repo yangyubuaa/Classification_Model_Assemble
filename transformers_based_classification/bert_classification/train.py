@@ -94,7 +94,7 @@ def train():
                     train_accu = int((train_y == train_predict).sum()) / len(train_y)
                     sum_eval_accu = 0
                     sum_eval_loss = 0
-                    for eval_batch in eval_dataloader:
+                    for e_i, eval_batch in enumerate(eval_dataloader):
                         eval_input_ids, eval_token_type_ids, eval_attention_mask, eval_y = eval_batch
                         eval_y = eval_y.squeeze()
                         if use_cuda:
