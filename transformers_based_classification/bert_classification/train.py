@@ -89,7 +89,7 @@ def train():
 
             if batch_index % 100 == 0:
                 model.eval()
-                with torch.no_grad:
+                with torch.no_grad():
                     train_predict = torch.argmax(train_y_predict, 1)
                     train_accu = int((train_y == train_predict).sum()) / len(train_y)
                     sum_eval_accu = 0
