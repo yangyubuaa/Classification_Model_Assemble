@@ -97,7 +97,7 @@ def train():
                     eval_y = eval_y.squeeze()
                     if use_cuda:
                         eval_input_ids, eval_token_type_ids, eval_attention_mask, eval_y = \
-                            eval_input_ids.cuda(device=1), eval_token_type_ids.cuda(device=1), eval_attention_mask.cuda(device=1), eval_y.cuda(device=1)
+                            eval_input_ids.cuda(device=0), eval_token_type_ids.cuda(device=0), eval_attention_mask.cuda(device=0), eval_y.cuda(device=0)
 
                     eval_y_predict = model(eval_input_ids, eval_token_type_ids, eval_attention_mask)
                     eval_loss = cross_entropy(eval_y_predict, eval_y)
