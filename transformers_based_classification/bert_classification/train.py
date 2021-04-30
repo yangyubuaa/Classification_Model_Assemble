@@ -4,7 +4,7 @@ import argparse
 import sys
 sys.path.append("../..")
 from torch.utils.data import DataLoader
-from torch.optim import Adam
+from torch.optim import SGD
 from torch.nn.functional import cross_entropy
 
 from transformers import BertTokenizer
@@ -57,7 +57,7 @@ def train():
     eval_dataloader = DataLoader(eval_set, batch_size=8)
 
     # 创建优化器
-    optmizer = Adam(model.parameters(), lr=0.00001)
+    optmizer = SGD(model.parameters(), lr=0.00001)
 
     # 创建损失函数
     loss_f = nn.CrossEntropyLoss()
@@ -87,7 +87,6 @@ def train():
                 torch.save(model, "model.bin")
                 return
 
-            '''
             if batch_index % 100 == 0:
                 train_predict = torch.argmax(train_y_predict, 1)
                 train_accu = int((train_y == train_predict).sum()) / len(train_y)
@@ -107,16 +106,14 @@ def train():
                     eval_accu = int((eval_y == eval_predict).sum()) / len(eval_y)
                     sum_eval_accu = sum_eval_accu + eval_accu
                     sum_eval_loss = sum_eval_loss + eval_loss
-                    model = model.cpu()
+                    optmizer.zero_grad()
                     torch.cuda.empty_cache()
-                    if use_cuda:
-                        model = model.cuda()
                 sum_eval_accu = sum_eval_accu / len(eval_dataloader)
                 sum_eval_loss = sum_eval_loss / len(eval_dataloader)
                 print("train_epoch:{} | train_batch:{} | train_loss:{} | eval_loss:{} | train_accu:{} | eval_accu:{}"
                       "".format(epoch, batch_index, train_loss.item(), sum_eval_loss, train_accu, sum_eval_accu))
                 # train_record(model, params_s, epoch, index, train_loss, eval_loss, train_accu, eval_accu)
-            '''
+
 
 
 if __name__ == '__main__':
