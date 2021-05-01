@@ -19,16 +19,19 @@ from data_preprocess.Tokenizer.label_tokenizer import ClassificationLabelTokeniz
 def train():
     # 是否使用gpu加速
     use_cuda = True if torch.cuda.is_available() else False
+    # 查看可用的GPU数量
     if use_cuda:
         device_nums = torch.cuda.device_count()
         print("use {} GPUs!".format(device_nums))
 
-    # 预处理以及模型参数读取
+    # 预处理以及模型参数读取（后面需要修改，因为需要读取两个文件，耦合性过高）
     train_configs = load_yaml("bert_classification_config.yaml")
     params = load_yaml(train_configs["path"]["preprocess_config_path"])
+
+    # 根据参数实例化数据集类（当前该类需要训练集和测试集才能够初始化，需要修改）
     p = Preprocess(params)
 
-    # 得到原始数据集训练文本和标签
+    # 得到原始数据集文本和标签
     source_train_x, source_train_y = p.get_train_data()
     source_eval_x, source_eval_y = p.get_eval_data()
 
@@ -36,22 +39,27 @@ def train():
     berttokenizer = BertTokenizer.from_pretrained(train_configs["path"]["bert_path"])
     labeltokenizer = ClassificationLabelTokenizer(params["tokenized_path"]["label2index_json_path"])
 
-    # 将训练集和测试集进行tokenize
+    # 将训练集进行tokenize
     train_x_tokenized = berttokenizer(source_train_x, padding=True, truncation=True, return_tensors="pt")
     train_y_tokenized = labeltokenizer(source_train_y)
 
+    # 将测试集进行tokenize
     eval_x_tokenized = berttokenizer(source_eval_x, padding=True, truncation=True, return_tensors="pt")
     eval_y_tokenized = labeltokenizer(source_eval_y)
 
-    # 创建训练集和测试集
+    # 创建训练集和测试集（测试集类，如果有明确划分的训练集和测试集，那么分别进行初始化，如果只有训练集，那么可以进行交叉验证）
     train_set = BertSequenceDataset(train_x_tokenized, train_y_tokenized)
     eval_set = BertSequenceDataset(eval_x_tokenized, eval_y_tokenized)
 
     # 读取模型参数初始化模型
     model = BertClassification(train_configs)
+
+    # 如果使用cuda，那么进行多GPU训练
     if use_cuda:
         model = nn.DataParallel(model, device_ids=list(range(device_nums)))
+        # 将模型放在第0个GPU
         model = model.cuda(device=0)
+
     # 使用dataloader加载训练集和测试集
     train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
     eval_dataloader = DataLoader(eval_set, batch_size=64)
