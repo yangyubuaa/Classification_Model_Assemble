@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from transformers import ElectraModel, ElectraTokenizer
+from transformers import ElectraModel
 
 
 class ElectraClassification(nn.Module):
@@ -13,9 +13,9 @@ class ElectraClassification(nn.Module):
         self.label_nums = self.configs["label_nums"]
         self.dropout = self.configs["dropout"]
 
-        self.bert_model = ElectraModel.from_pretrained(self.configs["path"]["bert_path"])
-        for p in self.bert_model.parameters():
-            p.requires_grad = True
+        self.electra_model = ElectraModel.from_pretrained(self.configs["path"]["electra_path"])
+        # for p in self.bert_model.parameters():
+        #     p.requires_grad = True
         # output shape of bert: (batch_size, seqlens, lstm_hiddensize)
         self.classification = torch.nn.Sequential(
             torch.nn.Linear(self.bert_hiddensize, self.dense),
@@ -25,8 +25,8 @@ class ElectraClassification(nn.Module):
         )
 
     def forward(self, input_ids, token_type_ids, attention_mask):
-        bert_outputs = self.bert_model(input_ids, token_type_ids, attention_mask)
-        last_hidden_state = bert_outputs.last_hidden_state #(bsz, seqlens, hiddensize)
+        electra_outputs = self.electra_model(input_ids, token_type_ids, attention_mask)
+        last_hidden_state = electra_outputs.last_hidden_state #(bsz, seqlens, hiddensize)
         last_hidden_state = last_hidden_state[:, 0, :].squeeze()
         return self.classification(last_hidden_state)
 
