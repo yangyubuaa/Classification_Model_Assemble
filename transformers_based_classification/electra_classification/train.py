@@ -10,6 +10,7 @@ from torch.nn.functional import cross_entropy
 from transformers import  AutoTokenizer
 
 from utils.load import load_yaml
+from utils.train_record import TrainProcessRecord
 from dataset.preprocess import Preprocess
 from transformers_based_classification.electra_classification.model import ElectraClassification
 from data_preprocess.Dataset.dataset import BertSequenceDataset
@@ -69,6 +70,9 @@ def train():
 
     # 创建损失函数
     loss_f = nn.CrossEntropyLoss()
+
+    train_record = TrainProcessRecord(train_configs)
+
     for epoch in range(100):
         for batch_index, batch in enumerate(train_dataloader):
             # print(batch_index)
@@ -89,12 +93,8 @@ def train():
 
             train_loss.backward()
             optmizer.step()
-            # print(train_loss)
-            # if train_loss < 0.01 or epoch == 20:
-            #     model = model.cpu()
-            #     torch.save(model, "model.bin")
-            #     return
 
+            # 每100个batch进行测试集预测和存储
             if batch_index % 100 == 0:
                 model.eval()
                 with torch.no_grad():
@@ -122,7 +122,7 @@ def train():
                     sum_eval_loss = sum_eval_loss / len(eval_dataloader)
                     print("train_epoch:{} | train_batch:{} | train_loss:{} | eval_loss:{} | train_accu:{} | eval_accu:{}"
                           "".format(epoch, batch_index, train_loss.item(), sum_eval_loss, train_accu, sum_eval_accu))
-                    # train_record(model, params_s, epoch, index, train_loss, eval_loss, train_accu, eval_accu)
+                    train_record(model, epoch, batch_index, train_loss, eval_loss, train_accu, eval_accu)
                 model.train()
 
 

@@ -1,3 +1,5 @@
+model_name: electra_cla
+
 path:
   electra_path: /home/ubuntu1804/bert模型/chinese-electra-180g-small-discriminator
   preprocess_config_path: /home/ubuntu1804/pytorch_sequence_classification/dataset/preprocess_config.yaml
@@ -5,3 +7,9 @@ bert_hiddensize: 256
 dense: 512
 label_nums: 188
 dropout: 0.8
+
+
+train_record_settings:
+  train_process_record_path: /home/ubuntu1804/pytorch_sequence_classification/transformers_based_classification/electra_classification/train_record
+  train_model_save_threshold: 1000
+  train_params_save_threshold: 100
