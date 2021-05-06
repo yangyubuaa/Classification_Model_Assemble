@@ -25,6 +25,8 @@ class TrainProcessRecord:
         self.train_params_records = dict()
         # 加入模型参数
         self.train_params_records["model_params"] = config
+        # 加入训练记录参数
+        self.train_params_records["train_record"] = dict()
 
         # 设置模型和参数存储路径
         self.abs_path = config["train_record_settings"]["train_process_record_path"]
@@ -47,7 +49,7 @@ class TrainProcessRecord:
             # 将模型参数存储在内置数据结构中
             time_stamp = datetime.datetime.now()
             t = "time_stamp  " + time_stamp.strftime('%Y.%m.%d-%H:%M:%S')
-            self.train_params_records[t] = (epoch, batch, *args)
+            self.train_params_records["train_record"][t] = (epoch, batch, *args)
             # for a in args:
             #     print(type(a))
             self.save_params()
