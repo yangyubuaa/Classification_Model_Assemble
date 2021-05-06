@@ -62,11 +62,11 @@ def train():
         model = model.cuda(device=0)
 
     # 使用dataloader加载训练集和测试集
-    train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
-    eval_dataloader = DataLoader(eval_set, batch_size=64)
+    train_dataloader = DataLoader(train_set, batch_size=1024, shuffle=True)
+    eval_dataloader = DataLoader(eval_set, batch_size=1024)
 
     # 创建优化器
-    optmizer = Adam(model.parameters(), lr=0.00001)
+    optmizer = Adam(model.parameters(), lr=0.0001)
 
     # 创建损失函数
     loss_f = nn.CrossEntropyLoss()
