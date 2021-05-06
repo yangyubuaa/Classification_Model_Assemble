@@ -11,6 +11,7 @@ from transformers import  AutoTokenizer
 
 from utils.load import load_yaml
 from utils.train_record import TrainProcessRecord
+from utils.model_params_print import model_params_print
 from dataset.preprocess import Preprocess
 from transformers_based_classification.electra_classification.model import ElectraClassification
 from data_preprocess.Dataset.dataset import BertSequenceDataset
@@ -27,6 +28,10 @@ def train():
 
     # 预处理以及模型参数读取（后面需要修改，因为需要读取两个文件，耦合性过高）
     train_configs = load_yaml("electra_classification_config.yaml")
+
+    print("模型参数如下：")
+    model_params_print(train_configs)
+
     params = load_yaml(train_configs["path"]["preprocess_config_path"])
 
     # 根据参数实例化数据集类（当前该类需要训练集和测试集才能够初始化，需要修改）
@@ -61,19 +66,24 @@ def train():
         # 将模型放在第0个GPU
         model = model.cuda(device=0)
 
+    # 获取训练参数
+    epoch_param = train_configs["train_params"]["epoch"]
+    batch_size_param = train_configs["train_params"]["batch_size"]
+    learning_rate_param = train_configs["train_params"]["learning_rate"]
+
     # 使用dataloader加载训练集和测试集
-    train_dataloader = DataLoader(train_set, batch_size=1024, shuffle=True)
-    eval_dataloader = DataLoader(eval_set, batch_size=1024)
+    train_dataloader = DataLoader(train_set, batch_size=batch_size_param, shuffle=True)
+    eval_dataloader = DataLoader(eval_set, batch_size=batch_size_param)
 
     # 创建优化器
-    optmizer = Adam(model.parameters(), lr=0.0001)
+    optmizer = Adam(model.parameters(), lr=learning_rate_param)
 
     # 创建损失函数
     loss_f = nn.CrossEntropyLoss()
 
     train_record = TrainProcessRecord(train_configs)
 
-    for epoch in range(100):
+    for epoch in range(epoch_param):
         for batch_index, batch in enumerate(train_dataloader):
             # print(batch_index)
             optmizer.zero_grad()
@@ -94,8 +104,8 @@ def train():
             train_loss.backward()
             optmizer.step()
 
-            # 每100个batch进行测试集预测和存储
-            if batch_index % 100 == 0:
+            # 每 train_params_save_threshold 个batch进行测试集预测和存储
+            if batch_index % train_configs["train_record_settings"]["train_params_save_threshold"] == 0:
                 model.eval()
                 with torch.no_grad():
                     train_predict = torch.argmax(train_y_predict, 1)
@@ -115,14 +125,14 @@ def train():
                         eval_predict = torch.argmax(eval_y_predict, 1)
                         eval_accu = int((eval_y == eval_predict).sum()) / len(eval_y)
                         sum_eval_accu = sum_eval_accu + eval_accu
-                        sum_eval_loss = sum_eval_loss + eval_loss
+                        sum_eval_loss = sum_eval_loss + eval_loss.item()
                         optmizer.zero_grad()
                         torch.cuda.empty_cache()
                     sum_eval_accu = sum_eval_accu / len(eval_dataloader)
                     sum_eval_loss = sum_eval_loss / len(eval_dataloader)
                     print("train_epoch:{} | train_batch:{} | train_loss:{} | eval_loss:{} | train_accu:{} | eval_accu:{}"
                           "".format(epoch, batch_index, train_loss.item(), sum_eval_loss, train_accu, sum_eval_accu))
-                    train_record(model, epoch, batch_index, train_loss, eval_loss, train_accu, eval_accu)
+                    train_record(model, epoch, batch_index, train_loss.item(), eval_loss.item(), train_accu, eval_accu)
                 model.train()
 
 
