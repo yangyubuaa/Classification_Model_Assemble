@@ -2,14 +2,16 @@
 将嵌套字典进行输出
 """
 
-from load import load_yaml
+from utils.load import load_yaml
 
 def model_params_print(configs):
     if isinstance(configs, dict) : #使用isinstance检测数据类型
         for x in range(len(configs)):
             temp_key = list(configs.keys())[x]
             temp_value = configs[temp_key]
-            print("%s : %s" %(temp_key,temp_value))
+            if not isinstance(temp_value, dict):
+                print("%s : %s" %(temp_key,temp_value))
+                print("\n")
             model_params_print(temp_value) #自我调用实现无限遍历
 
 if __name__ == "__main__":

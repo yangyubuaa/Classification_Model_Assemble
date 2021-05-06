@@ -8,7 +8,13 @@ import torch
 import json
 
 class TrainProcessRecord:
-    def __init__(self, config):
+    """模型参数以及训练过程数据存储类
+    """
+    def __init__(self, config: dict):
+        """实例化类
+
+        config: 需要的参数
+        """
         # 设置模型存储的batch阈值，每到threshold % batch == 0时，保存模型，通常该值设置为self.train_params_save_threshold的倍数
         self.train_model_save_threshold = config["train_record_settings"]["train_model_save_threshold"]
 
@@ -17,6 +23,8 @@ class TrainProcessRecord:
 
         # 存储训练过程中得到的数据
         self.train_params_records = dict()
+        # 加入模型参数
+        self.train_params_records["model_params"] = config
 
         # 设置模型和参数存储路径
         self.abs_path = config["train_record_settings"]["train_process_record_path"]
@@ -33,21 +41,27 @@ class TrainProcessRecord:
             # 设置模型自动存储格式
             save_path = "[{}]_epoch[{}]_batch[{}].bin".format(self.model_name, str(epoch), str(batch))
             print(save_path + " model saved! ")
-            self.save(model, save_path)
+            self.save_model(model, save_path)
 
         if batch % self.train_params_save_threshold == 0:
             # 将模型参数存储在内置数据结构中
             time_stamp = datetime.datetime.now()
             t = "time_stamp  " + time_stamp.strftime('%Y.%m.%d-%H:%M:%S')
             self.train_params_records[t] = (epoch, batch, *args)
+            # for a in args:
+            #     print(type(a))
+            self.save_params()
+            print("params updated!")
 
-    def save(self, model, save_path="save_model.bin"):
+    def save_model(self, model, save_path="save_model.bin"):
         """
         存储模型文件，在训练结束过程中手动调用保存，存储模型时会更新record_params
         """
         # 存储模型
         torch.save(model, self.abs_path + save_path)
+    
+    def save_params(self):
         # 存储训练参数
         with open(self.abs_path + "save_params.json", "w") as json_w:
-            json.dump(self.train_params_records, json_w)
+            json.dump(self.train_params_records, json_w, indent=2)
         
