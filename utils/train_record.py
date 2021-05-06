@@ -27,6 +27,8 @@ class TrainProcessRecord:
         self.train_params_records["model_params"] = config
         # 加入训练记录参数
         self.train_params_records["train_record"] = dict()
+        # 加入训练时间记录参数
+        self.train_params_records["train_time"] = dict()
 
         # 设置模型和参数存储路径
         self.abs_path = config["train_record_settings"]["train_process_record_path"]
@@ -52,8 +54,9 @@ class TrainProcessRecord:
             self.train_params_records["train_record"][t] = (epoch, batch, *args)
             # for a in args:
             #     print(type(a))
-            self.save_params()
+            self.train_params_records["train_time"]["eval_time"+t] = args[-1]
             print("params updated!")
+            self.save_params()
 
     def save_model(self, model, save_path="save_model.bin"):
         """
@@ -64,6 +67,11 @@ class TrainProcessRecord:
     
     def save_params(self):
         # 存储训练参数
+        with open(self.abs_path + "save_params.json", "w") as json_w:
+            json.dump(self.train_params_records, json_w, indent=2)
+
+    def save_time(self, time):
+        self.train_params_records["train_time"]["total_time"] = str(time)
         with open(self.abs_path + "save_params.json", "w") as json_w:
             json.dump(self.train_params_records, json_w, indent=2)
         
