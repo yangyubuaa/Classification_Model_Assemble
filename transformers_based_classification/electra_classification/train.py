@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import argparse
 import sys
+import time
 sys.path.append("../..")
 from torch.utils.data import DataLoader
 from torch.optim import Adam
@@ -83,6 +84,8 @@ def train():
 
     train_record = TrainProcessRecord(train_configs)
 
+
+    train_start = time.time()
     for epoch in range(epoch_param):
         for batch_index, batch in enumerate(train_dataloader):
             # print(batch_index)
@@ -112,6 +115,9 @@ def train():
                     train_accu = int((train_y == train_predict).sum()) / len(train_y)
                     sum_eval_accu = 0
                     sum_eval_loss = 0
+
+                    eval_start = time.time()
+
                     for e_i, eval_batch in enumerate(eval_dataloader):
                         eval_input_ids, eval_token_type_ids, eval_attention_mask, eval_y = eval_batch
                         eval_y = eval_y.squeeze()
@@ -130,11 +136,18 @@ def train():
                         torch.cuda.empty_cache()
                     sum_eval_accu = sum_eval_accu / len(eval_dataloader)
                     sum_eval_loss = sum_eval_loss / len(eval_dataloader)
-                    print("train_epoch:{} | train_batch:{} | train_loss:{} | eval_loss:{} | train_accu:{} | eval_accu:{}"
-                          "".format(epoch, batch_index, train_loss.item(), sum_eval_loss, train_accu, sum_eval_accu))
-                    train_record(model, epoch, batch_index, train_loss.item(), eval_loss.item(), train_accu, eval_accu)
-                model.train()
 
+                    eval_end = time.time()
+
+                    eval_time = eval_end - eval_start
+
+                    print("train_epoch:{} | train_batch:{} | train_loss:{} | eval_loss:{} | train_accu:{} | eval_accu:{}"
+                          "eval time:{}".format(epoch, batch_index, train_loss.item(), sum_eval_loss, train_accu, sum_eval_accu, eval_time))
+                    train_record(model, epoch, batch_index, train_loss.item(), eval_loss.item(), train_accu, eval_accu, eval_time)
+                model.train()
+    train_end = time.time()
+    train_time = train_end - train_start
+    train_record.save_time(train_time)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("python train.py")
