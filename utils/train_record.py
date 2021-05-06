@@ -5,7 +5,7 @@
 # @Software: PyCharm
 import datetime
 import torch
-import pickle
+import json
 
 class TrainProcessRecord:
     def __init__(self, config):
@@ -16,7 +16,7 @@ class TrainProcessRecord:
         self.train_params_save_threshold = config["train_record_settings"]["train_params_save_threshold"]
 
         # 存储训练过程中得到的数据
-        self.train_params_records = list()
+        self.train_params_records = dict()
 
         # 设置模型和参数存储路径
         self.abs_path = config["train_record_settings"]["train_process_record_path"]
@@ -39,7 +39,7 @@ class TrainProcessRecord:
             # 将模型参数存储在内置数据结构中
             time_stamp = datetime.datetime.now()
             t = "time_stamp  " + time_stamp.strftime('%Y.%m.%d-%H:%M:%S')
-            self.train_params_records.append((t, epoch, batch, *args))
+            self.train_params_records[t] = (epoch, batch, *args)
 
     def save(self, model, save_path="save_model.bin"):
         """
@@ -48,6 +48,6 @@ class TrainProcessRecord:
         # 存储模型
         torch.save(model, self.abs_path + save_path)
         # 存储训练参数
-        with open(self.abs_path + "save_params.pickle", "wb") as pickle_w:
-            pickle.dump(self.train_params_records, pickle_w)
+        with open(self.abs_path + "save_params.json", "w") as json_w:
+            json.dump(self.train_params_records, json_w)
         
