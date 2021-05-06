@@ -3,7 +3,7 @@
 # @Author: yang yu
 # @File: train_record.py.py
 # @Software: PyCharm
-
+import datetime
 import torch
 import pickle
 
@@ -37,7 +37,9 @@ class TrainProcessRecord:
 
         if batch % self.train_params_save_threshold == 0:
             # 将模型参数存储在内置数据结构中
-            self.train_params_records.append((epoch, batch, *args))
+            time_stamp = datetime.datetime.now()
+            t = "time_stamp  " + time_stamp.strftime('%Y.%m.%d-%H:%M:%S')
+            self.train_params_records.append((t, epoch, batch, *args))
 
     def save(self, model, save_path="save_model.bin"):
         """
