@@ -8,6 +8,9 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.nn.functional import cross_entropy
 
+# 混合精度训练
+from torch.cuda.amp import autocast, GradScaler
+
 from transformers import  AutoTokenizer
 
 from utils.load import load_yaml
@@ -84,6 +87,7 @@ def train():
 
     train_record = TrainProcessRecord(train_configs)
 
+    scaler = GradScaler()
 
     train_start = time.time()
     for epoch in range(epoch_param):
@@ -100,12 +104,17 @@ def train():
                     input_ids.cuda(device=0), token_type_ids.cuda(device=0), attention_mask.cuda(device=0), train_y.cuda(device=0)
 
 
-            train_y_predict = model(input_ids, token_type_ids, attention_mask)
-            train_y = train_y.squeeze()
-            train_loss = loss_f(train_y_predict, train_y)
+            with autocast():
+                train_y_predict = model(input_ids, token_type_ids, attention_mask)
+                train_y = train_y.squeeze()
+                train_loss = loss_f(train_y_predict, train_y)
 
-            train_loss.backward()
-            optmizer.step()
+            scaler.scale(train_loss).backward()
+
+            scaler.step(optmizer)
+            scaler.update()
+            # 不使用混合精度训练
+            # optmizer.step()
 
             # 每 train_params_save_threshold 个batch进行测试集预测和存储
             if batch_index % train_configs["train_record_settings"]["train_params_save_threshold"] == 0:
