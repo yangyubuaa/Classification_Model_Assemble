@@ -85,34 +85,37 @@ def train():
     # 创建损失函数
     loss_f = nn.CrossEntropyLoss()
 
+    # 训练过程记录类
     train_record = TrainProcessRecord(train_configs)
 
+    # 损失梯度缩放器
     scaler = GradScaler()
 
     train_start = time.time()
     for epoch in range(epoch_param):
         for batch_index, batch in enumerate(train_dataloader):
-            # print(batch_index)
+            # 梯度清零（单精度、混合精度）
             optmizer.zero_grad()
             input_ids, token_type_ids, attention_mask, train_y = batch
-            # l = input_ids.numpy().tolist()
-            # for i in l:
-            #     print(berttokenizer.decode(i))
-            # print(labeltokenizer.decode(train_y))
+
+            # 使用cuda训练
             if use_cuda:
                 input_ids, token_type_ids, attention_mask, train_y = \
                     input_ids.cuda(device=0), token_type_ids.cuda(device=0), attention_mask.cuda(device=0), train_y.cuda(device=0)
 
-
+            # 自动精度转换进行前向传播（混合精度使用上下文）
             with autocast():
                 train_y_predict = model(input_ids, token_type_ids, attention_mask)
                 train_y = train_y.squeeze()
                 train_loss = loss_f(train_y_predict, train_y)
 
+            # 放大损失（混合精度）
             scaler.scale(train_loss).backward()
-
+            # 权重更新（混合精度）
             scaler.step(optmizer)
+            # 更新缩放器（混合精度）
             scaler.update()
+
             # 不使用混合精度训练
             # optmizer.step()
 
