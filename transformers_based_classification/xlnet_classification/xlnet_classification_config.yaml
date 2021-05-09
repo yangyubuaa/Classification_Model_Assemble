@@ -1,0 +1,7 @@
+model_path:
+  xlnet_path: /home/ubuntu1804/bert模型/chinese-xlnet-base
+
+model_params:
+  xlnet_d_model: 768
+  linear_mid_dimension: 768
+  label_nums: 
