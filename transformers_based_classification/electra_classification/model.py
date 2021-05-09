@@ -25,7 +25,7 @@ class ElectraClassification(nn.Module):
         )
 
     def forward(self, input_ids, token_type_ids, attention_mask):
-        electra_outputs = self.electra_model(input_ids, token_type_ids, attention_mask)
+        electra_outputs = self.electra_model(input_ids, token_type_ids, attention_mask, return_dict=True)
         last_hidden_state = electra_outputs.last_hidden_state #(bsz, seqlens, hiddensize)
         last_hidden_state = last_hidden_state[:, 0, :].squeeze()
         return self.classification(last_hidden_state)
