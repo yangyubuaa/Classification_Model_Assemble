@@ -14,12 +14,12 @@ dropout: 0.8
 
 # train params
 train_params:
-  epoch: 1
+  epoch: 15
   batch_size: 1024
   learning_rate: 0.0001
 
 # train record settings
 train_record_settings:
-  train_process_record_path: /home/ubuntu1804/pytorch_sequence_classification/transformers_based_classification/electra_classification/train_record/
+  train_process_record_path: /home/ubuntu1804/pytorch_sequence_classification/transformers_based_classification/electra_classification/checkpoint/
   train_model_save_threshold: 100
   train_params_save_threshold: 10
