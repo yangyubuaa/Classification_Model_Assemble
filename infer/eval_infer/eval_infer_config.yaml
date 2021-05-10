@@ -1,0 +1,16 @@
+# optional: fasttext, lstm_base, lstm_pack, textcnn, bert, electra, xlnet
+model_select: bert
+
+eval_data_file: /home/ubuntu1804/pytorch_sequence_classification/dataset/eval_data/eval.xlsx
+eval_label_transfer_file: /home/ubuntu1804/pytorch_sequence_classification/dataset/label2index.json
+
+model_path:
+  fasttext: /home/ubuntu1804/pytorch_sequence_classification/simple_classification/FastText/checkpoint/pytorch_model.bin
+  lstm_base: /home/ubuntu1804/pytorch_sequence_classification/simple_classification/lstm_base/checkpoint/pytorch_model.bin
+  lstm_pack: /home/ubuntu1804/pytorch_sequence_classification/simple_classification/lstm_pack/checkpoint/pytorch_model.bin
+  textcnn: /home/ubuntu1804/pytorch_sequence_classification/simple_classification/TextCNN/checkpoint/pytorch_model.bin
+  bert: /home/ubuntu1804/pytorch_sequence_classification/transformers_based_classification/bert_classification/checkpoint/pytorch_model.bin
+  electra: /home/ubuntu1804/pytorch_sequence_classification/transformers_based_classification/electra_classification/checkpoint/pytorch_model.bin
+  xlnet: /home/ubuntu1804/pytorch_sequence_classification/transformers_based_classification/xlnet_classification/checkpoint/pytorch_model.bin
+
+
