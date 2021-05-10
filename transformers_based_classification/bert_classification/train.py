@@ -90,7 +90,7 @@ def train():
             train_loss.backward()
             optmizer.step()
             # print(train_loss)
-            if train_loss < 0.01 or epoch == 20:
+            if train_loss < 0.01 or epoch == 3:
                 model = model.cpu()
                 torch.save(model, "model.bin")
                 return
