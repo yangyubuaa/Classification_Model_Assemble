@@ -1,9 +1,12 @@
 # optional: fasttext, lstm_base, lstm_pack, textcnn, bert, electra, xlnet
-model_select: bert
+model_select: electra
 
+# 测试集文件路径以及token和label映射路径
 eval_data_file: /home/ubuntu1804/pytorch_sequence_classification/dataset/eval_data/eval.xlsx
 eval_label_transfer_file: /home/ubuntu1804/pytorch_sequence_classification/dataset/label2index.json
+eval_token_transfer_file: /home/ubuntu1804/pytorch_sequence_classification/dataset/vocab2index.json
 
+# 训练好的pytorch模型路径
 model_path:
   fasttext: /home/ubuntu1804/pytorch_sequence_classification/simple_classification/FastText/checkpoint/pytorch_model.bin
   lstm_base: /home/ubuntu1804/pytorch_sequence_classification/simple_classification/lstm_base/checkpoint/pytorch_model.bin
@@ -13,4 +16,8 @@ model_path:
   electra: /home/ubuntu1804/pytorch_sequence_classification/transformers_based_classification/electra_classification/checkpoint/pytorch_model.bin
   xlnet: /home/ubuntu1804/pytorch_sequence_classification/transformers_based_classification/xlnet_classification/checkpoint/pytorch_model.bin
 
-
+# 预训练模型路径，tokenizer使用
+pretrained_model_path:
+  bert: /home/ubuntu1804/bert模型/bert-base-chinese
+  electra: /home/ubuntu1804/bert模型/chinese-electra-180g-small-discriminator
+  xlnet: /home/ubuntu1804/bert模型/chinese-xlnet-base
