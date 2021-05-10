@@ -14,7 +14,7 @@ dropout: 0.8
 
 # train params
 train_params:
-  epoch: 15
+  epoch: 1
   batch_size: 1024
   learning_rate: 0.0001
 
