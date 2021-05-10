@@ -1,13 +1,13 @@
 import sys
 sys.path.append("../../")
 import torch
+import pandas as pd
 
 from tqdm import tqdm
 
 from eval_infer_base import EvalInfer
 
 from data_preprocess.Dataset.dataset import SequenceDataset, BertSequenceDataset
-
 
 from utils.load import load_yaml, load_xlsx, load_json
 
@@ -53,7 +53,14 @@ class EvalInferFire(EvalInfer):
         for index in tqdm(range(len(data_x_clear))):
             predict_result.append(self.predict_one(data_x_clear[index], data_y_clear[index]))
      
-                
+        save_df = pd.DataFrame({
+            "text":data_x_clear,
+            "intent":data_y_clear,
+            "predict":predict_result
+        })
+
+        save_df.to_excel("final_.xlsx")
+
     def predict_one(self, input_sequence, label):
         """预测一条数据
 
@@ -76,7 +83,7 @@ class EvalInferFire(EvalInfer):
             # print(predict_result.shape)
             label = torch.argmax(predict_result, 0).cpu()
             # print(self.label_tokenizer.decoßde(label))
-
+            return self.label_tokenizer.decode(label)
             
 if __name__=="__main__":
     configs = load_yaml("eval_infer_config.yaml")
