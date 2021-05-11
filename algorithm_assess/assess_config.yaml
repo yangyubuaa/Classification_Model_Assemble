@@ -1,0 +1,3 @@
+predicted_dataset_path: /home/ubuntu1804/pytorch_sequence_classification/infer/eval_infer/final_.xlsx
+
+label2index_json_path: /home/ubuntu1804/pytorch_sequence_classification/dataset/label2index.json
