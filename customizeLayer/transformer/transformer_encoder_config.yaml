@@ -1,0 +1,6 @@
+# optional relative, absolute
+pos_embedding: relative
+position_embedding_dim: 300
+max_seq_len: 512
+
+d_model: 512
