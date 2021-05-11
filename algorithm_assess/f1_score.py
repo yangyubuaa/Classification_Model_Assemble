@@ -118,6 +118,16 @@ class MultilabelF1_Score:
         df = pd.DataFrame(accumulates)
         df.to_excel("score.xlsx")
 
+        # 打印混淆矩阵
+        df = pd.DataFrame(self.confusion_matrix.numpy())
+        df.index = self.label2index.keys()
+        df.columns = self.label2index.keys()
+        print(df)
+        for i in self.not_in_test:
+            df = df.drop(self.index2label[i], axis=0)
+            df = df.drop(self.index2label[i], axis=1)
+        df.to_excel("confusion_matrix.xlsx")
+
 
 
 if __name__=="__main__":

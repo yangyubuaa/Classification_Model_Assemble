@@ -1,6 +1,6 @@
 
 data_path:
-  train: /home/ubuntu1804/pytorch_sequence_classification/dataset/final_.xlsx
+  train: /home/ubuntu1804/pytorch_sequence_classification/dataset/final.xlsx
   eval: /home/ubuntu1804/pytorch_sequence_classification/dataset/eval_data/eval.xlsx
 
 tokenized_path:

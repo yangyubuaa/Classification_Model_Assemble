@@ -1,0 +1,4 @@
+use_expand: True
+
+expand_dirty_path: /home/ubuntu1804/pytorch_sequence_classification/dataset/expand_data/final.xlsx
+source_dirty_path: /home/ubuntu1804/pytorch_sequence_classification/dataset/source_data/source_all.xlsx

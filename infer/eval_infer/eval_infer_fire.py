@@ -85,6 +85,7 @@ class EvalInferFire(EvalInfer):
             # print(self.label_tokenizer.decoßde(label))
             return self.label_tokenizer.decode(label)
 
+
 if __name__=="__main__":
     configs = load_yaml("eval_infer_config.yaml")
     evalInferFire = EvalInferFire(configs)
