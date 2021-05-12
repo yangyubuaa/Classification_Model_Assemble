@@ -1,0 +1,5 @@
+d_model: 768
+vocab_size: 21100
+word_embed_dim: 768
+max_position: 512
+abs_pos_embed_dim: 768
