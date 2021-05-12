@@ -6,6 +6,9 @@ from utils.load import load_yaml
 from customizeLayer.functional.softmax import softmax_tensor
 
 class SelfAttention(torch.nn.Module):
+    """自定义self-attention层
+    
+    """
     def __init__(self, configs):
         super(SelfAttention, self).__init__()
 
@@ -61,6 +64,8 @@ class SelfAttention(torch.nn.Module):
         # input shape (bsz, seq, d_model)
 
         self_attention = torch.matmul(attention_score, input)
+        # print(self_attention.shape) (bsz, seq_len, d_model)
+
         return self_attention
 
 

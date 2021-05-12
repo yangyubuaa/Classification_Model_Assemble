@@ -2,7 +2,7 @@ import torch
 import sys
 sys.path.append("../../../")
 
-from customizeLayer.transformer.position_embedding import AbsPositionEmbedding
+from customizeLayer.transformer.base.position_embedding import AbsPositionEmbedding
 from utils.load import load_yaml
 
 
